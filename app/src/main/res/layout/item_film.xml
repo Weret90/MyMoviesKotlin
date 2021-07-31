@@ -1,46 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:id="@+id/imageViewSmallPoster"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp">
-
-    <LinearLayout
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <ImageView
-            android:id="@+id/filmPoster"
-            android:layout_width="120dp"
-            android:layout_height="150dp"
-            android:scaleType="centerCrop"
-            tools:src="@drawable/ic_launcher_background" />
-
-        <TextView
-            android:id="@+id/filmTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp"
-            android:gravity="center"
-            tools:text="Какой-то фильм" />
-
-        <TextView
-            android:id="@+id/filmYear"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            tools:text="2020" />
-
-        <TextView
-            android:id="@+id/filmRating"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            tools:text="7.6" />
-
-
-    </LinearLayout>
-
-</androidx.cardview.widget.CardView>
+    android:adjustViewBounds="true"
+    android:contentDescription="@string/poster_of_film"
+    tools:src="@drawable/ic_launcher_background" />

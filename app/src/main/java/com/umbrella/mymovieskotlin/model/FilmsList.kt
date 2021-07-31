@@ -1,6 +1,8 @@
 package com.umbrella.mymovieskotlin.model
 
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
@@ -9,15 +11,19 @@ data class FilmsList(
     val films: List<Film>
 )
 
+@Entity(tableName = "movies")
 data class Film(
-    @SerializedName("genre_ids")
-    val genreIds: List<Int>,
+//    @SerializedName("genre_ids")
+//    val genreIds: List<Int>,
     @SerializedName("original_language")
     val originalLanguage: String,
     @SerializedName("backdrop_path")
     val backdropPath: String,
+
+    @PrimaryKey
     @SerializedName("id")
     val id: Int,
+
     @SerializedName("original_title")
     val originalTitle: String,
     @SerializedName("overview")

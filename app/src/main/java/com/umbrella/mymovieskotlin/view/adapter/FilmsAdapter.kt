@@ -9,15 +9,21 @@ import com.umbrella.mymovieskotlin.model.Film
 
 class FilmsAdapter : RecyclerView.Adapter<FilmsAdapter.MyViewHolder>() {
 
-    private var films: List<Film> = ArrayList()
+    private var films: MutableList<Film> = mutableListOf()
     private var onFilmClickListener: OnFilmClickListener? = null
 
     companion object {
-        private const val POSTER_URL = "https://image.tmdb.org/t/p/original"
+        private const val SMALL_POSTER_URL = "https://image.tmdb.org/t/p/w185"
+        private const val BIG_POSTER_URL = "https://image.tmdb.org/t/p/w780"
     }
 
-    fun upgradeFilms(films: List<Film>) {
-        this.films = films
+    fun setMovies(films: List<Film>) {
+        this.films = films as MutableList<Film>
+        notifyDataSetChanged()
+    }
+
+    fun addMovies(films: List<Film>) {
+        this.films.addAll(films)
         notifyDataSetChanged()
     }
 
@@ -51,20 +57,20 @@ class FilmsAdapter : RecyclerView.Adapter<FilmsAdapter.MyViewHolder>() {
         return films.size
     }
 
-    inner class MyViewHolder(private val binding: ItemFilmBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class MyViewHolder(private val binding: ItemFilmBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
         fun bind(film: Film) {
-            binding.filmTitle.text = film.title
-            val posterUrl = POSTER_URL + film.posterPath
+            val smallPosterFullUrl = SMALL_POSTER_URL + film.posterPath
             Picasso.get()
-                .load(posterUrl)
-                .into(binding.filmPoster)
-            binding.filmYear.text = film.releaseDate
-            binding.filmRating.text = film.voteAverage.toString()
+                .load(smallPosterFullUrl)
+                .into(binding.imageViewSmallPoster)
             binding.root.setOnClickListener {
                 onFilmClickListener?.let {
                     it.onFilmClick(adapterPosition)
                 }
             }
         }
+
     }
 }

@@ -1,54 +1,54 @@
 package com.umbrella.mymovieskotlin.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import android.app.Application
+import androidx.lifecycle.*
+import com.umbrella.mymovieskotlin.model.Film
 import com.umbrella.mymovieskotlin.model.FilmsList
+import com.umbrella.mymovieskotlin.model.data.MovieDatabase
 import com.umbrella.mymovieskotlin.model.network.RetroInstance
 import com.umbrella.mymovieskotlin.model.network.RetroService
-import com.umbrella.mymovieskotlin.view.FilmsFragment
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 
-class MainViewModel : ViewModel() {
+class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val horrorsLiveData = MutableLiveData<FilmsList>()
-    private val actionsLiveData = MutableLiveData<FilmsList>()
-    private val comediesLiveData = MutableLiveData<FilmsList>()
-    private val loadingBarLiveData = MutableLiveData<String>()
+    private val filmsLiveData = MutableLiveData<FilmsList>()
+    private val database: MovieDatabase = MovieDatabase.getInstance(application)
 
-    fun getData(genre: String): LiveData<FilmsList> {
-        return when (genre) {
-            FilmsFragment.ACTION -> actionsLiveData
-            FilmsFragment.HORROR -> horrorsLiveData
-            else -> comediesLiveData
+
+    fun getData(): LiveData<FilmsList> {
+        return filmsLiveData
+    }
+
+    fun makeApiCall(sortBy: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val retroInstance = RetroInstance.getRetroInstance().create(RetroService::class.java)
+            val response = retroInstance.getDataFromApi("1", sortBy)
+            filmsLiveData.postValue(response)
         }
     }
 
-    fun getLoadingBarLiveData(): LiveData<String> {
-        return loadingBarLiveData
+    fun getAllMoviesFromDB() {
+        viewModelScope.launch(Dispatchers.IO) {
+            database.movieDao().getAllMovie()
+        }
     }
 
-    fun makeApiCall() {
+    fun deleteAllMovies() {
         viewModelScope.launch(Dispatchers.IO) {
-            val retroInstance = RetroInstance.getRetroInstance().create(RetroService::class.java)
-            joinAll(
-                launch {
-                    val responseHorrors = retroInstance.getDataFromApi("1", FilmsFragment.HORROR)
-                    horrorsLiveData.postValue(responseHorrors)
-                },
-                launch {
-                    val responseComedies = retroInstance.getDataFromApi("1", FilmsFragment.COMEDY)
-                    comediesLiveData.postValue(responseComedies)
-                },
-                launch {
-                    val responseActions = retroInstance.getDataFromApi("1", FilmsFragment.ACTION)
-                    actionsLiveData.postValue(responseActions)
-                }
-            )
-            loadingBarLiveData.postValue("Download data is over")
+            database.movieDao().deleteAllMovies()
+        }
+    }
+
+    fun insertMovie(movie: Film) {
+        viewModelScope.launch(Dispatchers.IO) {
+            database.movieDao().insertMovie(movie)
+        }
+    }
+
+    fun deleteMovie(movie: Film) {
+        viewModelScope.launch(Dispatchers.IO) {
+            database.movieDao().deleteMovie(movie)
         }
     }
 }
