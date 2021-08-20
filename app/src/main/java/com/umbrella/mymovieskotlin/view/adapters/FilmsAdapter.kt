@@ -1,4 +1,4 @@
-package com.umbrella.mymovieskotlin.view.adapter
+package com.umbrella.mymovieskotlin.view.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,15 +7,13 @@ import com.squareup.picasso.Picasso
 import com.umbrella.mymovieskotlin.databinding.ItemFilmBinding
 import com.umbrella.mymovieskotlin.model.Film
 
+private const val SMALL_POSTER_URL = "https://image.tmdb.org/t/p/w185"
+
 class FilmsAdapter : RecyclerView.Adapter<FilmsAdapter.MyViewHolder>() {
 
     private var films: MutableList<Film> = mutableListOf()
-    private var onFilmClickListener: OnFilmClickListener? = null
-
-    companion object {
-        private const val SMALL_POSTER_URL = "https://image.tmdb.org/t/p/w185"
-        private const val BIG_POSTER_URL = "https://image.tmdb.org/t/p/w780"
-    }
+    private var onFilmClick: (Film) -> Unit = {}
+    private var onReachEnd: () -> Unit = {}
 
     fun setMovies(films: List<Film>) {
         this.films = films as MutableList<Film>
@@ -31,24 +29,25 @@ class FilmsAdapter : RecyclerView.Adapter<FilmsAdapter.MyViewHolder>() {
         return films
     }
 
-    interface OnFilmClickListener {
-        fun onFilmClick(position: Int)
+    fun setOnFilmClickListener(onFilmClick: (Film) -> Unit) {
+        this.onFilmClick = onFilmClick
     }
 
-    fun setOnFilmClickListener(onFilmClickListener: OnFilmClickListener) {
-        this.onFilmClickListener = onFilmClickListener
+    fun setOnReachEndListener(onReachEnd: () -> Unit) {
+        this.onReachEnd = onReachEnd
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val binding = ItemFilmBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
+            LayoutInflater.from(parent.context), parent, false
         )
         return MyViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        if (films.size >= 20 && position == films.size - 1) {
+            onReachEnd()
+        }
         val film = films[position]
         holder.bind(film)
     }
@@ -66,11 +65,8 @@ class FilmsAdapter : RecyclerView.Adapter<FilmsAdapter.MyViewHolder>() {
                 .load(smallPosterFullUrl)
                 .into(binding.imageViewSmallPoster)
             binding.root.setOnClickListener {
-                onFilmClickListener?.let {
-                    it.onFilmClick(adapterPosition)
-                }
+                onFilmClick(film)
             }
         }
-
     }
 }

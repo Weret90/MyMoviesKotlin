@@ -2,9 +2,10 @@ package com.umbrella.mymovieskotlin.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.*
+import com.umbrella.mymovieskotlin.model.AppState
 import com.umbrella.mymovieskotlin.model.Film
-import com.umbrella.mymovieskotlin.model.FilmsList
-import com.umbrella.mymovieskotlin.model.data.MovieDatabase
+import com.umbrella.mymovieskotlin.model.data.MovieDatabasePopularityFilms
+import com.umbrella.mymovieskotlin.model.data.MovieDatabaseRating
 import com.umbrella.mymovieskotlin.model.network.RetroInstance
 import com.umbrella.mymovieskotlin.model.network.RetroService
 import kotlinx.coroutines.Dispatchers
@@ -12,43 +13,80 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val filmsLiveData = MutableLiveData<FilmsList>()
-    private val database: MovieDatabase = MovieDatabase.getInstance(application)
+    private val filmsFromServerFirstPageLiveData = MutableLiveData<AppState>()
+    private val filmsFromServerNextPagesLiveData = MutableLiveData<AppState>()
 
+    private val databasePopularityFilms: MovieDatabasePopularityFilms =
+        MovieDatabasePopularityFilms.getInstance(application)
+    private val databaseRatingFilms: MovieDatabaseRating =
+        MovieDatabaseRating.getInstance(application)
 
-    fun getData(): LiveData<FilmsList> {
-        return filmsLiveData
+    private val filmsPopularityFromDBLiveData = databasePopularityFilms.movieDao().getAllMovie()
+    private val filmsRatingFromDBLiveData = databaseRatingFilms.movieDao().getAllMovie()
+
+    fun getFilmsFromServerFirstPageLiveData(): LiveData<AppState> = filmsFromServerFirstPageLiveData
+
+    fun getFilmsFromServerNextPagesLiveData(): LiveData<AppState> = filmsFromServerNextPagesLiveData
+
+    fun getPopularityFilmsFromDBLiveData(): LiveData<List<Film>> {
+        return filmsPopularityFromDBLiveData
     }
 
-    fun makeApiCall(sortBy: String) {
+    fun getRatingFilmsFromDBLiveData(): LiveData<List<Film>> {
+        return filmsRatingFromDBLiveData
+    }
+
+    fun downloadFilmsFromServer(sortBy: String, page: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            val retroInstance = RetroInstance.getRetroInstance().create(RetroService::class.java)
-            val response = retroInstance.getDataFromApi("1", sortBy)
-            filmsLiveData.postValue(response)
+            try {
+                if (page == 1) {
+                    filmsFromServerFirstPageLiveData.postValue(AppState.Loading)
+                }
+                val retroInstance =
+                    RetroInstance.getRetroInstance().create(RetroService::class.java)
+                val response = retroInstance.getDataFromApi(page.toString(), sortBy)
+                if (page == 1) {
+                    filmsFromServerFirstPageLiveData.postValue(AppState.Success(response))
+                } else {
+                    filmsFromServerNextPagesLiveData.postValue(AppState.Success(response))
+                }
+            } catch (e: Exception) {
+                if (page == 1) {
+                    filmsFromServerFirstPageLiveData.postValue(AppState.Error(e))
+                } else {
+                    filmsFromServerNextPagesLiveData.postValue(AppState.Error(e))
+                }
+            }
         }
     }
 
-    fun getAllMoviesFromDB() {
+    private fun insertMovieIntoPopularityFilmsDB(movie: Film) {
         viewModelScope.launch(Dispatchers.IO) {
-            database.movieDao().getAllMovie()
+            databasePopularityFilms.movieDao().insertMovie(movie)
         }
     }
 
-    fun deleteAllMovies() {
+    private fun insertMovieIntoRatingFilmsDB(movie: Film) {
         viewModelScope.launch(Dispatchers.IO) {
-            database.movieDao().deleteAllMovies()
+            databaseRatingFilms.movieDao().insertMovie(movie)
         }
     }
 
-    fun insertMovie(movie: Film) {
+    fun clearAllMoviesInPopularityFilmsDBAndInsertFreshData(films: List<Film>) {
         viewModelScope.launch(Dispatchers.IO) {
-            database.movieDao().insertMovie(movie)
+            launch { databasePopularityFilms.movieDao().deleteAllMovies() }.join()
+            for (film in films) {
+                insertMovieIntoPopularityFilmsDB(film)
+            }
         }
     }
 
-    fun deleteMovie(movie: Film) {
+    fun clearAllMoviesInRatingFilmsDBAndInsertFreshData(films: List<Film>) {
         viewModelScope.launch(Dispatchers.IO) {
-            database.movieDao().deleteMovie(movie)
+            launch { databaseRatingFilms.movieDao().deleteAllMovies() }.join()
+            for (film in films) {
+                insertMovieIntoRatingFilmsDB(film)
+            }
         }
     }
 }

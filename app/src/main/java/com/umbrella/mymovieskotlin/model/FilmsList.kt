@@ -12,30 +12,29 @@ data class FilmsList(
 )
 
 @Entity(tableName = "movies")
-data class Film(
+open class Film(
+    @PrimaryKey(autoGenerate = true)
+    var uniqueId: Int,
 //    @SerializedName("genre_ids")
 //    val genreIds: List<Int>,
     @SerializedName("original_language")
-    val originalLanguage: String,
+    val originalLanguage: String?,
     @SerializedName("backdrop_path")
-    val backdropPath: String,
-
-    @PrimaryKey
+    val backdropPath: String?,
     @SerializedName("id")
     val id: Int,
-
     @SerializedName("original_title")
-    val originalTitle: String,
+    val originalTitle: String?,
     @SerializedName("overview")
-    val overview: String,
+    val overview: String?,
     @SerializedName("poster_path")
-    val posterPath: String,
+    val posterPath: String?,
     @SerializedName("release_date")
-    val releaseDate: String,
+    val releaseDate: String?,
     @SerializedName("title")
-    val title: String,
+    val title: String?,
     @SerializedName("vote_average")
-    val voteAverage: Double,
+    val voteAverage: Double?,
     @SerializedName("vote_count")
-    val voteCount: Int
+    val voteCount: Int?
 ) : Serializable

@@ -15,4 +15,9 @@
         android:name="com.umbrella.mymovieskotlin.view.FilmDetailFragment"
         android:label="fragment_film_detail"
         tools:layout="@layout/fragment_film_detail" />
+    <fragment
+        android:id="@+id/favouriteFragment"
+        android:name="com.umbrella.mymovieskotlin.view.FavouriteFragment"
+        android:label="fragment_favourite"
+        tools:layout="@layout/fragment_favourite" />
 </navigation>

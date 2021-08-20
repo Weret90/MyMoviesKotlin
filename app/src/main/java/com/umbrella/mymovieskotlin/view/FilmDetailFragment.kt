@@ -1,21 +1,32 @@
 package com.umbrella.mymovieskotlin.view
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
 import com.squareup.picasso.Picasso
 import com.umbrella.mymovieskotlin.databinding.FragmentFilmDetailBinding
 import com.umbrella.mymovieskotlin.model.Film
+import com.umbrella.mymovieskotlin.view.adapters.ReviewAdapter
+import com.umbrella.mymovieskotlin.view.adapters.TrailerAdapter
+import com.umbrella.mymovieskotlin.viewmodel.FilmDetailViewModel
+import com.umbrella.mymovieskotlin.viewmodel.MainViewModel
+
+private const val BIG_POSTER_URL = "https://image.tmdb.org/t/p/w780"
 
 class FilmDetailFragment : Fragment() {
 
     private var _binding: FragmentFilmDetailBinding? = null
     private val binding get() = _binding!!
-
-    companion object {
-        private const val POSTER_URL = "https://image.tmdb.org/t/p/original"
+    private val reviewsAdapter = ReviewAdapter()
+    private val trailersAdapter = TrailerAdapter()
+    private val viewModel: FilmDetailViewModel by lazy {
+        ViewModelProvider(this).get(FilmDetailViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -33,16 +44,73 @@ class FilmDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        arguments?.let {
-            val film = it.getSerializable(FilmsFragment.ARG_FILM) as Film
-            binding.filmDescriptionTitle.text = film.title
-            val posterUrl = POSTER_URL + film.posterPath
-            Picasso.get()
-                .load(posterUrl)
-                .into(binding.filmDescriptionPoster)
-            binding.filmDescriptionYear.text = film.releaseDate
-            binding.filmDescriptionRating.text = film.voteAverage.toString()
-            binding.filmDescriptionDescription.text = film.overview
+        arguments?.let { bundle ->
+            val film = bundle.getSerializable(FilmsFragment.ARG_FILM) as Film
+            with(binding) {
+                textViewTitle.text = film.title
+                textViewOriginalTitle.text = film.originalTitle
+                val posterUrl = BIG_POSTER_URL + film.posterPath
+                Picasso.get()
+                    .load(posterUrl)
+                    .into(bigPoster)
+                textViewReleaseDate.text = film.releaseDate
+                textViewRating.text = film.voteAverage.toString()
+                textViewDescription.text = film.overview
+            }
+
+            trailersAdapter.setOnTrailerClickListener {
+                val intentToTrailer = Intent(Intent.ACTION_VIEW, Uri.parse(it))
+                startActivity(intentToTrailer)
+            }
+
+            binding.recyclerViewReviews.adapter = reviewsAdapter
+            binding.recyclerViewTrailers.adapter = trailersAdapter
+
+            if (reviewsAdapter.getReviews().isEmpty() && trailersAdapter.getTrailers().isEmpty()) {
+                downloadTrailersAndReviewsFromServerAndInitObservers(film)
+            }
+
+            initAddToFavouriteButtonImageAndInitListener(film)
+
+            val favouriteMovieLiveData = viewModel.getFavouriteMovieByIdFromDBLiveData(film.id)
+            favouriteMovieLiveData.observe(viewLifecycleOwner, { favouriteMovie ->
+                if (favouriteMovie == null) {
+                    binding.imageViewAddToFavourite.setImageResource(android.R.drawable.btn_star_big_off)
+                } else {
+                    binding.imageViewAddToFavourite.setImageResource(android.R.drawable.btn_star_big_on)
+                }
+            })
         }
+    }
+
+    private fun initAddToFavouriteButtonImageAndInitListener(film: Film) {
+        binding.imageViewAddToFavourite.setOnClickListener {
+            val addFavouriteMovieLiveData =
+                viewModel.getFavouriteMovieByIdFromDBLiveData(film.id)
+            addFavouriteMovieLiveData.observe(viewLifecycleOwner, { favouriteMovie ->
+                if (favouriteMovie == null) {
+                    viewModel.insertFavouriteMovieIntoDB(film)
+                    binding.imageViewAddToFavourite.setImageResource(android.R.drawable.btn_star_big_on)
+                    Toast.makeText(context, "Фильм добавлен в избранное", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    viewModel.deleteFavouriteMovieFromDB(film)
+                    Toast.makeText(context, "Фильм удален из избранного", Toast.LENGTH_SHORT)
+                        .show()
+                    binding.imageViewAddToFavourite.setImageResource(android.R.drawable.btn_star_big_off)
+                }
+            })
+        }
+    }
+
+    private fun downloadTrailersAndReviewsFromServerAndInitObservers(film: Film) {
+        viewModel.getReviewsLiveData().observe(viewLifecycleOwner, {
+            reviewsAdapter.setReviews(it.reviews)
+        })
+        viewModel.getTrailersLiveData().observe(viewLifecycleOwner, {
+            trailersAdapter.setTrailers(it.trailers)
+        })
+        viewModel.downloadReviews(film.id.toString())
+        viewModel.downloadTrailers(film.id.toString())
     }
 }
