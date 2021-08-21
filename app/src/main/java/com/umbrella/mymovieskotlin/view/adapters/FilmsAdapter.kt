@@ -29,6 +29,11 @@ class FilmsAdapter : RecyclerView.Adapter<FilmsAdapter.MyViewHolder>() {
         return films
     }
 
+    fun clear() {
+        this.films.clear()
+        notifyDataSetChanged()
+    }
+
     fun setOnFilmClickListener(onFilmClick: (Film) -> Unit) {
         this.onFilmClick = onFilmClick
     }
@@ -45,7 +50,7 @@ class FilmsAdapter : RecyclerView.Adapter<FilmsAdapter.MyViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        if (films.size >= 20 && position == films.size - 1) {
+        if (films.size >= 20 && position == films.size - 4) {
             onReachEnd()
         }
         val film = films[position]

@@ -13,8 +13,7 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val filmsFromServerFirstPageLiveData = MutableLiveData<AppState>()
-    private val filmsFromServerNextPagesLiveData = MutableLiveData<AppState>()
+    private val filmsFromServerLiveData = MutableLiveData<AppState>()
 
     private val databasePopularityFilms: MovieDatabasePopularityFilms =
         MovieDatabasePopularityFilms.getInstance(application)
@@ -24,9 +23,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val filmsPopularityFromDBLiveData = databasePopularityFilms.movieDao().getAllMovie()
     private val filmsRatingFromDBLiveData = databaseRatingFilms.movieDao().getAllMovie()
 
-    fun getFilmsFromServerFirstPageLiveData(): LiveData<AppState> = filmsFromServerFirstPageLiveData
-
-    fun getFilmsFromServerNextPagesLiveData(): LiveData<AppState> = filmsFromServerNextPagesLiveData
+    fun getFilmsFromServerLiveData(): LiveData<AppState> = filmsFromServerLiveData
 
     fun getPopularityFilmsFromDBLiveData(): LiveData<List<Film>> {
         return filmsPopularityFromDBLiveData
@@ -39,23 +36,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun downloadFilmsFromServer(sortBy: String, page: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                if (page == 1) {
-                    filmsFromServerFirstPageLiveData.postValue(AppState.Loading)
-                }
+                filmsFromServerLiveData.postValue(AppState.Loading)
                 val retroInstance =
                     RetroInstance.getRetroInstance().create(RetroService::class.java)
                 val response = retroInstance.getDataFromApi(page.toString(), sortBy)
-                if (page == 1) {
-                    filmsFromServerFirstPageLiveData.postValue(AppState.Success(response))
-                } else {
-                    filmsFromServerNextPagesLiveData.postValue(AppState.Success(response))
-                }
+                filmsFromServerLiveData.postValue(AppState.Success(response))
             } catch (e: Exception) {
-                if (page == 1) {
-                    filmsFromServerFirstPageLiveData.postValue(AppState.Error(e))
-                } else {
-                    filmsFromServerNextPagesLiveData.postValue(AppState.Error(e))
-                }
+                filmsFromServerLiveData.postValue(AppState.Error(e))
             }
         }
     }

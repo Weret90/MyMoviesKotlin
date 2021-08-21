@@ -1,7 +1,6 @@
 package com.umbrella.mymovieskotlin.view
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +25,7 @@ class FilmsFragment : Fragment() {
     private val filmsAdapter = FilmsAdapter()
     private var switchButtonIsChecked = false
     private var page = 1
-    private var isError = false
+    private var isDownloading = false
 
     companion object {
         //        const val HORROR = "27"
@@ -54,18 +53,17 @@ class FilmsFragment : Fragment() {
         binding.recyclerViewFilms.adapter = filmsAdapter
 
         binding.switchSort.isChecked = switchButtonIsChecked
-        checkSwitchSortTextViewColors()
+        checkSwitchSortTextViewsColors()
 
-        initFilmsFirstPageObserver()
+        initMainObserver()
 
-        initFilmsNextPagesObserver()
+        initListeners()
 
         if (filmsAdapter.getFilms().isEmpty()) {
             page = 1
+            setFilmsFromDB()
             viewModel.downloadFilmsFromServer(SORT_BY_POPULARITY, page)
         }
-
-        initListeners()
     }
 
     private fun initListeners() {
@@ -76,28 +74,29 @@ class FilmsFragment : Fragment() {
         }
 
         filmsAdapter.setOnReachEndListener {
-            if (switchButtonIsChecked) {
-                viewModel.downloadFilmsFromServer(SORT_BY_RATING, page)
-            } else {
-                viewModel.downloadFilmsFromServer(SORT_BY_POPULARITY, page)
+            if (!isDownloading) {
+                downloadDataWithSortCheck()
             }
         }
 
         binding.switchSort.setOnCheckedChangeListener { _, isChecked ->
             page = 1
-            isError = false
-            switchButtonIsChecked = if (isChecked) {
-                viewModel.downloadFilmsFromServer(SORT_BY_RATING, page)
-                true
-            } else {
-                viewModel.downloadFilmsFromServer(SORT_BY_POPULARITY, page)
-                false
-            }
-            checkSwitchSortTextViewColors()
+            switchButtonIsChecked = isChecked
+            setFilmsFromDB()
+            downloadDataWithSortCheck()
+            checkSwitchSortTextViewsColors()
         }
     }
 
-    private fun checkSwitchSortTextViewColors() {
+    private fun downloadDataWithSortCheck() {
+        if (switchButtonIsChecked) {
+            viewModel.downloadFilmsFromServer(SORT_BY_RATING, page)
+        } else {
+            viewModel.downloadFilmsFromServer(SORT_BY_POPULARITY, page)
+        }
+    }
+
+    private fun checkSwitchSortTextViewsColors() {
         if (switchButtonIsChecked) {
             binding.textViewTopRated.setTextColor(resources.getColor(R.color.purple_500))
             binding.textViewMostPopular.setTextColor(resources.getColor(R.color.white))
@@ -107,71 +106,49 @@ class FilmsFragment : Fragment() {
         }
     }
 
-    private fun initFilmsNextPagesObserver() {
-        viewModel.getFilmsFromServerNextPagesLiveData().observe(viewLifecycleOwner, { result ->
-            when (result) {
-                is AppState.Success -> {
-                    isError = false
-                    page++
-                    filmsAdapter.addMovies(result.response.films)
-                }
-                is AppState.Error -> {
-                    if (!isError) {
-                        isError = true
-                        Toast.makeText(
-                            context,
-                            "ОШИБКА: " + result.throwable.toString(),
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                }
-            }
-        })
+    private fun setFilmsFromDB() {
+        if (switchButtonIsChecked) {
+            viewModel.getRatingFilmsFromDBLiveData()
+                .observe(viewLifecycleOwner, { ratingFilms ->
+                    filmsAdapter.setMovies(ratingFilms)
+                })
+        } else {
+            viewModel.getPopularityFilmsFromDBLiveData()
+                .observe(viewLifecycleOwner, { popularityFilms ->
+                    filmsAdapter.setMovies(popularityFilms)
+                })
+        }
     }
 
-    private fun initFilmsFirstPageObserver() {
-        viewModel.getFilmsFromServerFirstPageLiveData().observe(viewLifecycleOwner, { result ->
-            page = 2
+    private fun initMainObserver() {
+        viewModel.getFilmsFromServerLiveData().observe(viewLifecycleOwner, { result ->
             when (result) {
                 is AppState.Loading -> {
+                    isDownloading = true
                     binding.loadingLayout.visibility = View.VISIBLE
                 }
                 is AppState.Success -> {
-                    isError = false
-                    if (switchButtonIsChecked) {
-                        viewModel.clearAllMoviesInRatingFilmsDBAndInsertFreshData(result.response.films)
-                    } else {
-                        viewModel.clearAllMoviesInPopularityFilmsDBAndInsertFreshData(result.response.films)
+                    if (page == 1) {
+                        if (switchButtonIsChecked) {
+                            viewModel.clearAllMoviesInRatingFilmsDBAndInsertFreshData(result.response.films)
+                        } else {
+                            viewModel.clearAllMoviesInPopularityFilmsDBAndInsertFreshData(result.response.films)
+                        }
+                        filmsAdapter.clear()
                     }
-                    filmsAdapter.setMovies(result.response.films)
+                    filmsAdapter.addMovies(result.response.films)
                     binding.loadingLayout.visibility = View.GONE
+                    page++
+                    isDownloading = false
                 }
                 is AppState.Error -> {
                     binding.loadingLayout.visibility = View.GONE
-                    if (switchButtonIsChecked) {
-                        viewModel.getRatingFilmsFromDBLiveData()
-                            .observe(viewLifecycleOwner, { ratingFilms ->
-                                filmsAdapter.setMovies(ratingFilms)
-                            })
-                    } else {
-                        viewModel.getPopularityFilmsFromDBLiveData()
-                            .observe(viewLifecycleOwner, { popularityFilms ->
-                                filmsAdapter.setMovies(popularityFilms)
-                            })
-                    }
-                    if (!isError) {
-                        isError = true
-                        Toast.makeText(
-                            context,
-                            "ОШИБКА: " + result.throwable.toString(),
-                            Toast.LENGTH_LONG
-                        ).show()
-                        Toast.makeText(
-                            context,
-                            "Отображены фильмы из базы данных",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                    Toast.makeText(
+                        context,
+                        "ОШИБКА: " + result.throwable.toString(),
+                        Toast.LENGTH_LONG
+                    ).show()
+                    isDownloading = false
                 }
             }
         })
