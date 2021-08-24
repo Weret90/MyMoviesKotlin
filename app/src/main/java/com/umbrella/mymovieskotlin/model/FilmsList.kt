@@ -15,8 +15,6 @@ data class FilmsList(
 open class Film(
     @PrimaryKey(autoGenerate = true)
     var uniqueId: Int,
-//    @SerializedName("genre_ids")
-//    val genreIds: List<Int>,
     @SerializedName("original_language")
     val originalLanguage: String?,
     @SerializedName("backdrop_path")

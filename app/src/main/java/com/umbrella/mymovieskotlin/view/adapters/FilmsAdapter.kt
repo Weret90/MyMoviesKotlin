@@ -25,9 +25,7 @@ class FilmsAdapter : RecyclerView.Adapter<FilmsAdapter.MyViewHolder>() {
         notifyDataSetChanged()
     }
 
-    fun getFilms(): List<Film> {
-        return films
-    }
+    fun getFilms() = films
 
     fun clear() {
         this.films.clear()

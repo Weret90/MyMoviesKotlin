@@ -15,7 +15,6 @@ import com.umbrella.mymovieskotlin.model.Film
 import com.umbrella.mymovieskotlin.view.adapters.ReviewAdapter
 import com.umbrella.mymovieskotlin.view.adapters.TrailerAdapter
 import com.umbrella.mymovieskotlin.viewmodel.FilmDetailViewModel
-import com.umbrella.mymovieskotlin.viewmodel.MainViewModel
 
 private const val BIG_POSTER_URL = "https://image.tmdb.org/t/p/w780"
 
@@ -67,43 +66,38 @@ class FilmDetailFragment : Fragment() {
             binding.recyclerViewTrailers.adapter = trailersAdapter
 
             if (reviewsAdapter.getReviews().isEmpty() && trailersAdapter.getTrailers().isEmpty()) {
-                downloadTrailersAndReviewsFromServerAndInitObservers(film)
+                downloadTrailersAndReviewsFromServerAndInitDownloadProgressObservers(film)
             }
 
-            initAddToFavouriteButtonImageAndInitListener(film)
-
-            val favouriteMovieLiveData = viewModel.getFavouriteMovieByIdFromDBLiveData(film.id)
-            favouriteMovieLiveData.observe(viewLifecycleOwner, { favouriteMovie ->
-                if (favouriteMovie == null) {
-                    binding.imageViewAddToFavourite.setImageResource(android.R.drawable.btn_star_big_off)
-                } else {
-                    binding.imageViewAddToFavourite.setImageResource(android.R.drawable.btn_star_big_on)
-                }
-            })
+            initAddToFavouriteButtonImageInitListenerAndButtonImageObserver(film)
         }
     }
 
-    private fun initAddToFavouriteButtonImageAndInitListener(film: Film) {
+    private fun initAddToFavouriteButtonImageInitListenerAndButtonImageObserver(film: Film) {
+        val favouriteMovieLiveData = viewModel.getFavouriteMovieByIdFromDBLiveData(film.id)
+
         binding.imageViewAddToFavourite.setOnClickListener {
-            val addFavouriteMovieLiveData =
-                viewModel.getFavouriteMovieByIdFromDBLiveData(film.id)
-            addFavouriteMovieLiveData.observe(viewLifecycleOwner, { favouriteMovie ->
-                if (favouriteMovie == null) {
-                    viewModel.insertFavouriteMovieIntoDB(film)
-                    binding.imageViewAddToFavourite.setImageResource(android.R.drawable.btn_star_big_on)
-                    Toast.makeText(context, "Фильм добавлен в избранное", Toast.LENGTH_SHORT)
-                        .show()
-                } else {
-                    viewModel.deleteFavouriteMovieFromDB(film)
-                    Toast.makeText(context, "Фильм удален из избранного", Toast.LENGTH_SHORT)
-                        .show()
-                    binding.imageViewAddToFavourite.setImageResource(android.R.drawable.btn_star_big_off)
-                }
-            })
+            if (favouriteMovieLiveData.value == null) {
+                viewModel.insertFavouriteMovieIntoDB(film)
+                Toast.makeText(context, "Фильм добавлен в избранное", Toast.LENGTH_SHORT)
+                    .show()
+            } else {
+                viewModel.deleteFavouriteMovieFromDB(film)
+                Toast.makeText(context, "Фильм удален из избранного", Toast.LENGTH_SHORT)
+                    .show()
+            }
         }
+
+        favouriteMovieLiveData.observe(viewLifecycleOwner, { favouriteMovie ->
+            if (favouriteMovie == null) {
+                binding.imageViewAddToFavourite.setImageResource(android.R.drawable.btn_star_big_off)
+            } else {
+                binding.imageViewAddToFavourite.setImageResource(android.R.drawable.btn_star_big_on)
+            }
+        })
     }
 
-    private fun downloadTrailersAndReviewsFromServerAndInitObservers(film: Film) {
+    private fun downloadTrailersAndReviewsFromServerAndInitDownloadProgressObservers(film: Film) {
         viewModel.getReviewsLiveData().observe(viewLifecycleOwner, {
             reviewsAdapter.setReviews(it.reviews)
         })

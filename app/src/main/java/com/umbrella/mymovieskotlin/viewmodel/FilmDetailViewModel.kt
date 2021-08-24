@@ -1,7 +1,6 @@
 package com.umbrella.mymovieskotlin.viewmodel
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -36,7 +35,6 @@ class FilmDetailViewModel(application: Application) : AndroidViewModel(applicati
                 val retroInstance =
                     RetroInstance.getRetroInstance().create(RetroService::class.java)
                 val response = retroInstance.getTrailersFromAPi(movieId)
-                Log.i("Proverka", response.trailers.toString())
                 trailersLiveData.postValue(response)
             } catch (e: Exception) {
 
@@ -69,11 +67,6 @@ class FilmDetailViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    fun getFavouriteMovieByIdFromDBLiveData(id: Int): LiveData<Film?> {
-        val liveData = MutableLiveData<Film?>()
-        viewModelScope.launch(Dispatchers.IO) {
-            liveData.postValue(databaseFavouriteFilms.movieDao().getMovieById(id))
-        }
-        return liveData
-    }
+    fun getFavouriteMovieByIdFromDBLiveData(id: Int) =
+        databaseFavouriteFilms.movieDao().getMovieById(id)
 }

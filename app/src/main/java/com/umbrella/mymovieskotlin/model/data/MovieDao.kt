@@ -10,7 +10,7 @@ interface MovieDao {
     fun getAllMovie(): LiveData<List<Film>>
 
     @Query("SELECT * FROM movies WHERE id == :movieId")
-    fun getMovieById(movieId: Int): Film?
+    fun getMovieById(movieId: Int): LiveData<Film?>
 
     @Query("DELETE FROM movies")
     fun deleteAllMovies()
