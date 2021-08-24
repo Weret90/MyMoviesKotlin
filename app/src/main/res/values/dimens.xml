@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="middle_margin">8dp</dimen>
+    <dimen name="button_add_to_favourite_size">60dp</dimen>
+    <dimen name="big_margin">16dp</dimen>
+    <dimen name="image_view_play_size">60dp</dimen>
+    <dimen name="small_margin">4dp</dimen>
+    <dimen name="separator_height_size">1dp</dimen>
+</resources>

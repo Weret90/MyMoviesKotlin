@@ -1,6 +1,7 @@
 package com.umbrella.mymovieskotlin.view
 
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import com.umbrella.mymovieskotlin.R
 import com.umbrella.mymovieskotlin.databinding.FragmentFilmsBinding
 import com.umbrella.mymovieskotlin.model.AppState
@@ -26,11 +28,9 @@ class FilmsFragment : Fragment() {
     private var switchButtonIsChecked = false
     private var page = 1
     private var isDownloading = false
+    private var isError = false
 
     companion object {
-        //        const val HORROR = "27"
-//        const val COMEDY = "35"
-//        const val ACTION = "28"
         const val ARG_FILM = "film"
     }
 
@@ -51,6 +51,7 @@ class FilmsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.recyclerViewFilms.adapter = filmsAdapter
+        binding.recyclerViewFilms.layoutManager = GridLayoutManager(context, getColumnCount())
 
         binding.switchSort.isChecked = switchButtonIsChecked
         checkSwitchSortTextViewsColors()
@@ -81,6 +82,7 @@ class FilmsFragment : Fragment() {
 
         binding.switchSort.setOnCheckedChangeListener { _, isChecked ->
             page = 1
+            isError = false
             switchButtonIsChecked = isChecked
             setFilmsFromDB()
             downloadDataWithSortCheck()
@@ -120,6 +122,18 @@ class FilmsFragment : Fragment() {
         }
     }
 
+    private fun getColumnCount(): Int {
+        val displayMetrics = DisplayMetrics()
+        activity?.windowManager?.defaultDisplay?.getRealMetrics(displayMetrics)
+        val width = displayMetrics.widthPixels / displayMetrics.density
+        val columnCount = (width / 185).toInt()
+        return if (columnCount > 2) {
+            columnCount
+        } else {
+            2
+        }
+    }
+
     private fun initMainObserver() {
         viewModel.getFilmsFromServerLiveData().observe(viewLifecycleOwner, { result ->
             when (result) {
@@ -139,15 +153,19 @@ class FilmsFragment : Fragment() {
                     filmsAdapter.addMovies(result.response.films)
                     binding.loadingLayout.visibility = View.GONE
                     page++
+                    isError = false
                     isDownloading = false
                 }
                 is AppState.Error -> {
+                    if (!isError) {
+                        Toast.makeText(
+                            context,
+                            getString(R.string.error) + result.throwable.toString(),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                     binding.loadingLayout.visibility = View.GONE
-                    Toast.makeText(
-                        context,
-                        "ОШИБКА: " + result.throwable.toString(),
-                        Toast.LENGTH_LONG
-                    ).show()
+                    isError = true
                     isDownloading = false
                 }
             }

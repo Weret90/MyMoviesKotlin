@@ -14,159 +14,31 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
+            android:contentDescription="@string/poster_of_film"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@drawable/ic_launcher_background" />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guidelineCenter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.5" />
-
-        <TextView
-            android:id="@+id/textViewLabelTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="Название:"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageViewAddToFavourite" />
-
-        <TextView
-            android:id="@+id/textViewTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:text="Название фильма"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/guidelineCenter"
-            app:layout_constraintTop_toBottomOf="@+id/imageViewAddToFavourite" />
-
-        <TextView
-            android:id="@+id/textViewLabelOriginalTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="Оригинальное название:"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewTitle" />
-
-        <TextView
-            android:id="@+id/textViewOriginalTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:text="Оригинальное название фильма"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/guidelineCenter"
-            app:layout_constraintTop_toBottomOf="@+id/textViewTitle" />
-
-        <TextView
-            android:id="@+id/textViewLabelRating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="Рейтинг:"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewOriginalTitle" />
-
-        <TextView
-            android:id="@+id/textViewRating"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:text="7.2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/guidelineCenter"
-            app:layout_constraintTop_toBottomOf="@+id/textViewOriginalTitle" />
-
-        <TextView
-            android:id="@+id/textViewLabelReleaseDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="Дата выхода:"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewRating" />
-
-        <TextView
-            android:id="@+id/textViewReleaseDate"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:text="01.01.2020"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/guidelineCenter"
-            app:layout_constraintTop_toBottomOf="@+id/textViewRating" />
-
-        <TextView
-            android:id="@+id/textViewLabelDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="Описание:"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewReleaseDate" />
-
-        <TextView
-            android:id="@+id/textViewDescription"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:paddingBottom="8dp"
-            android:text="Описание фильма"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewLabelDescription" />
-
         <ImageView
             android:id="@+id/imageViewAddToFavourite"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginEnd="16dp"
+            android:layout_width="@dimen/button_add_to_favourite_size"
+            android:layout_height="@dimen/button_add_to_favourite_size"
+            android:layout_marginEnd="@dimen/big_margin"
+            android:contentDescription="@string/add_to_favourite_button"
             app:layout_constraintBottom_toBottomOf="@+id/bigPoster"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/bigPoster"
             app:srcCompat="@android:drawable/btn_star_big_on" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewTrailers"
+        <include
+            android:id="@+id/filmInfo"
+            layout="@layout/film_info"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textViewDescription" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewReviews"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/recyclerViewTrailers" />
+            app:layout_constraintTop_toBottomOf="@id/imageViewAddToFavourite" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

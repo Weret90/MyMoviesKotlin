@@ -4,7 +4,7 @@
     xmlns:tool="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp">
+    android:layout_margin="@dimen/middle_margin">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -12,20 +12,22 @@
 
         <ImageView
             android:id="@+id/imageViewPlay"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_margin="8dp"
+            android:layout_width="@dimen/image_view_play_size"
+            android:layout_height="@dimen/image_view_play_size"
+            android:layout_margin="@dimen/middle_margin"
+            android:background="@android:color/holo_red_light"
+            android:contentDescription="@string/launch_trailer"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@android:drawable/ic_media_play"
-            android:contentDescription="@string/launch_trailer" />
+            app:srcCompat="@android:drawable/ic_media_play" />
 
         <TextView
             android:id="@+id/textViewNameOfVideo"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
+            android:layout_margin="@dimen/middle_margin"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@id/imageViewPlay"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/imageViewPlay"

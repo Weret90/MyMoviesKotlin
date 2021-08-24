@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.squareup.picasso.Picasso
+import com.umbrella.mymovieskotlin.R
 import com.umbrella.mymovieskotlin.databinding.FragmentFilmDetailBinding
 import com.umbrella.mymovieskotlin.model.Film
 import com.umbrella.mymovieskotlin.view.adapters.ReviewAdapter
@@ -46,15 +47,16 @@ class FilmDetailFragment : Fragment() {
         arguments?.let { bundle ->
             val film = bundle.getSerializable(FilmsFragment.ARG_FILM) as Film
             with(binding) {
-                textViewTitle.text = film.title
-                textViewOriginalTitle.text = film.originalTitle
+                filmInfo.textViewTitle.text = film.title
+                filmInfo.textViewOriginalTitle.text = film.originalTitle
                 val posterUrl = BIG_POSTER_URL + film.posterPath
                 Picasso.get()
                     .load(posterUrl)
+                    .placeholder(R.drawable.placeholder_image)
                     .into(bigPoster)
-                textViewReleaseDate.text = film.releaseDate
-                textViewRating.text = film.voteAverage.toString()
-                textViewDescription.text = film.overview
+                filmInfo.textViewReleaseDate.text = film.releaseDate
+                filmInfo.textViewRating.text = film.voteAverage.toString()
+                filmInfo.textViewDescription.text = film.overview
             }
 
             trailersAdapter.setOnTrailerClickListener {
@@ -62,8 +64,8 @@ class FilmDetailFragment : Fragment() {
                 startActivity(intentToTrailer)
             }
 
-            binding.recyclerViewReviews.adapter = reviewsAdapter
-            binding.recyclerViewTrailers.adapter = trailersAdapter
+            binding.filmInfo.recyclerViewReviews.adapter = reviewsAdapter
+            binding.filmInfo.recyclerViewTrailers.adapter = trailersAdapter
 
             if (reviewsAdapter.getReviews().isEmpty() && trailersAdapter.getTrailers().isEmpty()) {
                 downloadTrailersAndReviewsFromServerAndInitDownloadProgressObservers(film)

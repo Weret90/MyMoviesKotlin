@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineCenter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <TextView
+        android:id="@+id/textViewLabelTitle"
+        style="@style/film_detail_text_view_label_style"
+        android:text="@string/film_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewTitle"
+        style="@style/film_detail_text_view_style"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guidelineCenter"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Название фильма" />
+
+    <View
+        style="@style/separator_style"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitle" />
+
+    <TextView
+        android:id="@+id/textViewLabelOriginalTitle"
+        style="@style/film_detail_text_view_label_style"
+        android:text="@string/film_original_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewTitle" />
+
+    <TextView
+        android:id="@+id/textViewOriginalTitle"
+        style="@style/film_detail_text_view_style"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guidelineCenter"
+        app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
+        tools:text="Оригинальное название фильма" />
+
+    <View
+        style="@style/separator_style"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewOriginalTitle" />
+
+    <TextView
+        android:id="@+id/textViewLabelRating"
+        style="@style/film_detail_text_view_label_style"
+        android:text="@string/film_rating"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewOriginalTitle" />
+
+    <TextView
+        android:id="@+id/textViewRating"
+        style="@style/film_detail_text_view_style"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guidelineCenter"
+        app:layout_constraintTop_toBottomOf="@+id/textViewOriginalTitle"
+        tools:text="7.2" />
+
+    <View
+        style="@style/separator_style"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewRating" />
+
+    <TextView
+        android:id="@+id/textViewLabelReleaseDate"
+        style="@style/film_detail_text_view_label_style"
+        android:text="@string/film_release_date"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewRating" />
+
+    <TextView
+        android:id="@+id/textViewReleaseDate"
+        style="@style/film_detail_text_view_style"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guidelineCenter"
+        app:layout_constraintTop_toBottomOf="@+id/textViewRating"
+        tools:text="01.01.2020" />
+
+    <View
+        style="@style/separator_style"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewReleaseDate" />
+
+    <TextView
+        android:id="@+id/textViewLabelDescription"
+        style="@style/film_detail_text_view_label_style"
+        android:text="@string/film_description"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewReleaseDate" />
+
+    <TextView
+        android:id="@+id/textViewDescription"
+        style="@style/film_detail_text_view_style"
+        android:textStyle="italic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewLabelDescription"
+        tools:text="Описание фильма" />
+
+    <View
+        style="@style/separator_style"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewDescription" />
+
+    <TextView
+        android:id="@+id/textViewLabelTrailers"
+        style="@style/film_detail_text_view_label_style"
+        android:text="@string/film_trailers"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewDescription" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewTrailers"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="false"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewLabelTrailers" />
+
+    <View
+        style="@style/separator_style"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/recyclerViewTrailers" />
+
+    <TextView
+        android:id="@+id/textViewLabelReviews"
+        style="@style/film_detail_text_view_label_style"
+        android:paddingBottom="@dimen/small_margin"
+        android:text="@string/film_reviews"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerViewTrailers" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewReviews"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="false"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewLabelReviews" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

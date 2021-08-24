@@ -3,10 +3,10 @@
     <item
         android:id="@+id/item_main"
         android:icon="@drawable/icon_movies"
-        android:title="Главная" />
+        android:title="@string/bottom_nav_menu_main" />
 
     <item
         android:id="@+id/item_favourite"
         android:icon="@drawable/icon_favourite"
-        android:title="Избранное" />
+        android:title="@string/bottom_nav_menu_favourite" />
 </menu>

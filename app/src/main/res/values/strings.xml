@@ -4,4 +4,15 @@
     <string name="most_popular">Самые популярные</string>
     <string name="top_rated">Наиболее рейтинговые</string>
     <string name="launch_trailer">Запустить трейлер</string>
+    <string name="error">"ОШИБКА: "</string>
+    <string name="film_title">Название:</string>
+    <string name="film_original_title">Оригинальное название:</string>
+    <string name="film_rating">Рейтинг:</string>
+    <string name="film_release_date">Дата выхода:</string>
+    <string name="film_description">Описание:</string>
+    <string name="add_to_favourite_button">Кнопка "Добавить в избранное"</string>
+    <string name="film_trailers">Трейлеры:</string>
+    <string name="film_reviews">Отзывы:</string>
+    <string name="bottom_nav_menu_main">Главная</string>
+    <string name="bottom_nav_menu_favourite">Избранное</string>
 </resources>
